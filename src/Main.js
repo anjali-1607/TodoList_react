@@ -32,7 +32,7 @@ export default function Main() {
       const splittedTime = time.split(":");
       const AmOrPm = splittedTime[0] >= 12 ? "PM" : "AM";
       const hours = splittedTime[0] % 12 || 12;
-      const finalTime = splittedTime[0] + ":" + splittedTime[1] + " " + AmOrPm;
+      const finalTime = hours + ":" + splittedTime[1] + " " + AmOrPm;
       console.log(finalTime);
       console.log(todaData);
       setTodoData([...todaData, { ...data, time: finalTime }]);
