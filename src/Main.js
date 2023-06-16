@@ -1,25 +1,43 @@
 import React, { useState } from "react";
 
-import { Button, Segment, Table, TextArea, Form } from "semantic-ui-react";
+import {
+  Button,
+  Segment,
+  Table,
+  TextArea,
+  Form,
+  Divider,
+} from "semantic-ui-react";
 
 import { info } from "./InfoApi";
 
 export default function Main() {
   const [todaData, setTodoData] = useState(info);
   const [data, setData] = useState({});
+  // const [id, setId] = useState(null);
 
   const onsubmit = () => {
-    console.log(data);
-    const time = data.time;
-    const splittedTime = time.split(":");
-    const AmOrPm = splittedTime[0] >= 12 ? "PM" : "AM";
+    if (data.id) {
+      const newData = todaData.map((ele) =>
+        data.id + 1 == ele.id
+          ? { ...ele, schedule: data.schedule, time: data.time }
+          : ele
+      );
+      // console.log("NewData" + newData);
 
-    const hours = splittedTime[0] % 12 || 12;
-    const finalTime = splittedTime[0] + ":" + splittedTime[1] + " " + AmOrPm;
-    console.log(finalTime);
-    console.log(todaData);
-    setData("");
-    setTodoData([...todaData, { ...data, time: finalTime }]);
+      setTodoData(newData);
+    } else {
+      console.log(data);
+      const time = data.time;
+      const splittedTime = time.split(":");
+      const AmOrPm = splittedTime[0] >= 12 ? "PM" : "AM";
+      const hours = splittedTime[0] % 12 || 12;
+      const finalTime = splittedTime[0] + ":" + splittedTime[1] + " " + AmOrPm;
+      console.log(finalTime);
+      console.log(todaData);
+      setTodoData([...todaData, { ...data, time: finalTime }]);
+    }
+    setData({ id: null, schedule: "", time: {} });
   };
 
   function cancel(i) {
@@ -34,12 +52,13 @@ export default function Main() {
       return idx === i;
     });
     console.log(editTable);
-    setData(editTable[0]);
+    setData({ ...editTable[0], id: i });
   }
+  console.log("Hello", data);
 
   return (
     <>
-      <Segment color="grey">
+      <Segment style={{ boxShadow: "none", border: "0" }}>
         {" "}
         <div
           style={{
@@ -54,7 +73,9 @@ export default function Main() {
           TODO LIST{" "}
         </div>{" "}
       </Segment>
-      <Segment>
+      <Divider />
+
+      <Segment style={{ boxShadow: "none", border: "0" }}>
         <Form>
           <Form.Field>
             <label>Schedule</label>
@@ -73,6 +94,7 @@ export default function Main() {
           <Form.Field>
             <label>Time</label>
             <input
+              value={data.time}
               type="time"
               placeholder="Time"
               onChange={(e) => {
@@ -91,8 +113,8 @@ export default function Main() {
           </Button>
         </Form>
       </Segment>
-
-      <Segment color="grey">
+      <Divider />
+      <Segment style={{ boxShadow: "none", border: "0" }}>
         <Table celled>
           <Table.Header>
             <Table.Row>
@@ -112,7 +134,11 @@ export default function Main() {
                   <Table.Cell>{ele.time}</Table.Cell>
                   <Table.Cell>
                     <Button.Group>
-                      <Button positive onClick={() => edit(idx)}>
+                      <Button
+                        positive
+                        onClick={() => {
+                          edit(idx);
+                        }}>
                         Edit
                       </Button>
                       <Button.Or />
