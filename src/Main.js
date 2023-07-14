@@ -13,29 +13,26 @@ import { info } from "./InfoApi";
 
 export default function Main() {
   const [todaData, setTodoData] = useState(info);
-  const [data, setData] = useState({});
+  const [data, setData] = useState({ id: null, schedule: "", time: "" });
   // const [id, setId] = useState(null);
 
   const onsubmit = () => {
-    if (data.id) {
-      const newData = todaData.map((ele) =>
-        data.id + 1 == ele.id
+    if (data.id !== null) {
+      const newData = todaData.map((ele, idx) =>
+        idx === data.id
           ? { ...ele, schedule: data.schedule, time: data.time }
           : ele
       );
       // console.log("NewData" + newData);
 
       setTodoData(newData);
+      console.log(newData);
+      console.log(data);
+      console.log(setTodoData);
     } else {
       console.log(data);
-      const time = data.time;
-      const splittedTime = time.split(":");
-      const AmOrPm = splittedTime[0] >= 12 ? "PM" : "AM";
-      const hours = splittedTime[0] % 12 || 12;
-      const finalTime = hours + ":" + splittedTime[1] + " " + AmOrPm;
-      console.log(finalTime);
-      console.log(todaData);
-      setTodoData([...todaData, { ...data, time: finalTime }]);
+
+      setTodoData([...todaData, data]);
     }
     setData({ id: null, schedule: "", time: {} });
   };
@@ -52,9 +49,21 @@ export default function Main() {
       return idx === i;
     });
     console.log(editTable);
-    setData({ ...editTable[0], id: i });
+    setData({ ...todaData[i], id: i });
+    console.log("setdata", setData);
   }
   console.log("Hello", data);
+
+  const arrangeTime = (t) => {
+    const time = t;
+    const splittedTime = time.split(":");
+    const AmOrPm = splittedTime[0] >= 12 ? "PM" : "AM";
+    const hours = splittedTime[0] % 12 || 12;
+    const finalTime = hours + ":" + splittedTime[1] + " " + AmOrPm;
+    return finalTime;
+    // console.log(finalTime);
+  };
+  console.log(todaData);
 
   return (
     <>
@@ -131,7 +140,7 @@ export default function Main() {
                 <Table.Row key={idx}>
                   <Table.Cell>{idx + 1}</Table.Cell>
                   <Table.Cell>{ele.schedule} </Table.Cell>
-                  <Table.Cell>{ele.time}</Table.Cell>
+                  <Table.Cell>{arrangeTime(ele.time)}</Table.Cell>
                   <Table.Cell>
                     <Button.Group>
                       <Button
